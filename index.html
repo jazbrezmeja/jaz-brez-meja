@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f5f0e8">
+<meta name="description" content="JAZ, BREZ MEJA – moj osebni svet, misli, sanje in cilji.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<title>JAZ, BREZ MEJA</title>
+<style>
+:root{--bg:#f7f4ee;--paper:#fffdfa;--ink:#302b27;--muted:#81776d;--gold:#a88b61;--line:#e8e0d5;--soft:#f0e9df;--shadow:0 8px 28px #4a39200c}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+header{padding:28px 18px 22px;text-align:center;background:linear-gradient(145deg,#f1e9dd,#faf8f3);border-bottom:1px solid var(--line)}
+.kicker{letter-spacing:.22em;font-size:10px;color:var(--gold);font-weight:700}.brand{font:300 clamp(28px,7vw,42px)/1.1 Georgia,serif;letter-spacing:.035em;margin:9px 0 7px}.tag{font:italic 14px Georgia,serif;color:var(--muted)}
+.wrap{max-width:850px;margin:auto;padding:18px 14px 90px}
+.welcome{padding:18px 4px 12px}.welcome h2{font:24px Georgia,serif;margin:0 0 5px}.welcome p{margin:0;color:var(--muted)}
+nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:16px 0 22px}
+nav button{border:1px solid var(--line);background:var(--paper);border-radius:15px;padding:13px 12px;text-align:left;color:var(--ink);box-shadow:var(--shadow);font:inherit;cursor:pointer}
+nav button.active{border-color:var(--gold);background:#f4eee5}
+nav b{display:block;font-size:14px}nav small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:var(--shadow)}
+.panel h2{font:25px Georgia,serif;margin:0 0 4px}.sub{color:var(--muted);font-size:13px;margin:0 0 18px}
+label{display:block;font-size:13px;font-weight:650;margin:13px 0 6px}
+input,textarea,select{width:100%;padding:12px;border:1px solid var(--line);border-radius:11px;background:#fff;color:var(--ink);font:inherit}
+textarea{min-height:105px;resize:vertical}
+button.primary,.actions button{border:0;border-radius:11px;background:#4c4339;color:white;padding:11px 16px;font:inherit;cursor:pointer;margin-top:12px}
+button.secondary{background:var(--soft);color:var(--ink);border:1px solid var(--line);border-radius:11px;padding:10px 13px;font:inherit;cursor:pointer}
+.actions{display:flex;flex-wrap:wrap;gap:8px}.actions button{margin:0}
+.item{border-top:1px solid var(--line);padding:12px 0}.item:first-child{border-top:0}.item strong{display:block}.item p{white-space:pre-wrap;margin:5px 0;color:#62594f}.muted{color:var(--muted);font-size:12px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.photo{width:100%;max-height:230px;object-fit:cover;border-radius:12px;margin-top:8px}
+footer{text-align:center;color:var(--muted);font-size:11px;padding:24px 8px}
+.notice{background:#f4eee5;border-radius:12px;padding:11px 13px;color:#695b49;font-size:12px;margin:12px 0}
+.empty{color:var(--muted);font-style:italic;padding:12px 0}
+@media(min-width:620px){nav{grid-template-columns:repeat(4,1fr)}.panel{padding:24px}.wrap{padding-top:25px}}
+</style>
+</head>
+<body>
+<header><div class="kicker">MY SOUL JOURNAL</div><div class="brand">JAZ, BREZ MEJA</div><div class="tag">Moje misli. Moje sanje. Moja pot.</div></header>
+<main class="wrap">
+ <div class="welcome"><h2>Dobrodošla v svojem svetu. ♡</h2><p>Prostor za vse, kar si, kar sanjaš in kar še postajaš.</p></div>
+ <nav id="nav"></nav>
+ <section class="panel" id="panel"></section>
+ <footer>JAZ, BREZ MEJA · Tvoj osebni prostor</footer>
+</main>
+<script>
+const sections=[
+ ['dnevnik','✎','Moj dnevnik','Misli in občutki'],
+ ['manifest','✧','Manifestiranje','Želje in afirmacije'],
+ ['voznisko','⌁','Moje vozniško','Moja pot do izpita'],
+ ['druzina','♡','Moja družina','Spomini in trenutki'],
+ ['fotke','▧','Fotografije','Moji posebni trenutki'],
+ ['finance','€','Moje finance','Pregled in varčevanje'],
+ ['koledar','▦','Koledar','Načrti in navade']
+];
+let current='dnevnik';
+const nav=document.getElementById('nav'), panel=document.getElementById('panel');
+const read=(k)=>JSON.parse(localStorage.getItem('jbm_'+k)||'[]');
+const write=(k,v)=>localStorage.setItem('jbm_'+k,JSON.stringify(v));
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function drawNav(){nav.innerHTML=sections.map(s=>`<button class="${current===s[0]?'active':''}" data-go="${s[0]}"><b>${s[1]} &nbsp;${s[2]}</b><small>${s[3]}</small></button>`).join('');}
+function shell(title,desc,body){panel.innerHTML=`<h2>${title}</h2><p class="sub">${desc}</p>${body}`;}
+function entries(key){return read(key).slice().reverse().map(x=>`<div class="item"><strong>${esc(x.title||x.date||'Zapis')}</strong><div class="muted">${esc(x.date||'')}</div><p>${esc(x.text||'')}</p>${x.amount?`<b>${esc(x.amount)} €</b>`:''}</div>`).join('')||'<div class="empty">Tukaj se bo začela tvoja zgodba.</div>'}
+function formPage(cfg){
+ shell(cfg.title,cfg.desc,`${cfg.notice?`<div class="notice">${cfg.notice}</div>`:''}<form id="entryForm">${cfg.fields}<button class="primary" type="submit">Shrani zapis</button></form><h3 style="font:19px Georgia,serif;margin:24px 0 4px">Moji zapisi</h3><div id="entries">${entries(cfg.key)}</div>`);
+ document.getElementById('entryForm').addEventListener('submit',e=>{e.preventDefault();let fd=new FormData(e.target),obj={};for(let [k,v] of fd)obj[k]=v;obj.date=obj.date||new Date().toLocaleDateString('sl-SI');let a=read(cfg.key);a.push(obj);write(cfg.key,a);draw();});
+}
+function draw(){
+ drawNav();
+ const today=new Date().toISOString().slice(0,10);
+ if(current==='dnevnik')formPage({key:'dnevnik',title:'Moj dnevnik',desc:'Tukaj lahko odložiš misli, občutke in vse, kar nosiš v sebi.',fields:`<label>Datum</label><input type="date" name="date" value="${today}"><label>Kako se danes počutim?</label><input name="title" placeholder="Na primer: mirno, utrujeno, hvaležno …"><label>Moje misli</label><textarea name="text" placeholder="Piši čisto po svoje. Ni pravil."></textarea>`});
+ if(current==='manifest')formPage({key:'manifest',title:'Manifestiranje in cilji',desc:'Predstavljaj si, kaj si želiš, nato izberi majhen korak, ki ga lahko narediš.',notice:'Vizualizacija in afirmacije so lahko spodbuda. Želenih rezultatov ne zagotavljajo – pomagajo pa ti usmeriti pozornost in načrtovati dejanja.',fields:`<label>Moja želja ali cilj</label><input name="title" required placeholder="Kaj si želim?"><label>Kako se bom počutila, ko bom napredovala?</label><textarea name="text" placeholder="Opiši svojo vizijo …"></textarea><label>Moj naslednji konkreten korak</label><input name="step" placeholder="Kaj lahko naredim ta teden?">`});
+ if(current==='voznisko')formPage({key:'voznisko',title:'Moja pot do vozniškega dovoljenja',desc:'Vsak korak šteje – učenje, vprašanja, vaje in majhne zmage.',fields:`<label>Datum</label><input type="date" name="date" value="${today}"><label>Na čem delam?</label><select name="title"><option>CPP / teorija</option><option>Vožnja</option><option>Prva pomoč</option><option>Izpitna vožnja</option><option>Drugo</option></select><label>Kaj mi je šlo dobro?</label><textarea name="text" placeholder="Zapiši svoj napredek …"></textarea><label>Kaj želim naslednjič vaditi?</label><input name="step" placeholder="Moj naslednji korak">`});
+ if(current==='druzina')formPage({key:'druzina',title:'Moja družina',desc:'Shrani drobne trenutke, ki jih želiš nekoč znova prebrati.',fields:`<label>Datum</label><input type="date" name="date" value="${today}"><label>Naslov spomina</label><input name="title" placeholder="Na primer: naš smešen popoldan"><label>Moj spomin</label><textarea name="text" placeholder="Kaj se je zgodilo? Kdo je bil zraven?"></textarea>`});
+ if(current==='finance')formPage({key:'finance',title:'Moje finance',desc:'Preprost osebni pregled prihodkov, stroškov in varčevanja.',notice:'Finančni zapisi so shranjeni samo v tem brskalniku. Za zdaj ne vpisuj številk kartic, gesel ali drugih občutljivih podatkov.',fields:`<label>Datum</label><input type="date" name="date" value="${today}"><label>Opis</label><input name="title" required placeholder="Na primer: nakup živil"><div class="grid2"><div><label>Znesek (€)</label><input name="amount" type="number" step="0.01" placeholder="0,00"></div><div><label>Vrsta</label><select name="text"><option>Strošek</option><option>Prihodek</option><option>Varčevanje</option></select></div></div>`});
+ if(current==='koledar')formPage({key:'koledar',title:'Moj koledar',desc:'Dogodki, opravki in majhni koraki, ki jih ne želiš pozabiti.',fields:`<label>Datum</label><input type="date" name="date" value="${today}"><label>Dogodek ali opravilo</label><input name="title" required placeholder="Kaj imam v načrtu?"><label>Opombe</label><textarea name="text" placeholder="Ura, kraj ali dodatne opombe …"></textarea>`});
+ if(current==='fotke'){
+ shell('Moje fotografije','Majhna galerija tvojih posebnih trenutkov.',`<div class="notice">Fotografije ostanejo shranjene v tem brskalniku na tej napravi. Če izbrišeš podatke brskalnika, jih lahko izgubiš – redno izvozi varnostno kopijo.</div><label>Dodaj fotografijo</label><input id="photoInput" type="file" accept="image/*"><label>Kratek opis</label><input id="photoCaption" placeholder="Kaj želiš ohraniti v spominu?"><button class="primary" id="addPhoto">Dodaj fotografijo</button><div id="gallery"></div>`);
+ loadPhotos();
+ document.getElementById('addPhoto').onclick=async()=>{const f=document.getElementById('photoInput').files[0];if(!f)return alert('Najprej izberi fotografijo.');const data=await fileToData(f);let a=read('fotke');a.push({title:document.getElementById('photoCaption').value||f.name,date:new Date().toLocaleDateString('sl-SI'),data});write('fotke',a);loadPhotos();document.getElementById('photoInput').value='';document.getElementById('photoCaption').value='';};
+ }
+}
+function fileToData(file){return new Promise((res,rej)=>{let r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file);});}
+function loadPhotos(){let a=read('fotke');document.getElementById('gallery').innerHTML=a.length?a.slice().reverse().map(x=>`<div class="item"><strong>${esc(x.title)}</strong><div class="muted">${esc(x.date)}</div><img class="photo" src="${x.data}" alt="${esc(x.title)}"></div>`).join(''):'<p class="empty">Tvoje fotografije se bodo prikazale tukaj.</p>';}
+nav.addEventListener('click',e=>{let b=e.target.closest('[data-go]');if(b){current=b.dataset.go;draw();}});
+draw();
+if('serviceWorker' in navigator && location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
+</script>
+</body></html>
